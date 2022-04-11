@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="test">
+
+    </div>
+</body>
+<script>
+    function getDifference(a, b) {
+        return [...new Set([...Object.keys(a), ...Object.keys(b)])].reduce((r, k) => {
+            debugger;
+            if (a[k] && b[k] && typeof a[k] === 'object' && typeof b[k] === 'object') {
+                var temp = getDifference(a[k], b[k]);
+                if (temp.length) r.push(...temp.map(([l, ...a]) => [k + ' ' + l, ...a]));
+                return r;
+            }
+
+            if (k in a && !(k in b)) {
+                r.push([k, 'deleted', a[k]]);
+                return r;
+            }
+
+            if (!(k in a) && k in b) {
+                r.push([k, 'created', b[k]]);
+                return r;
+            }
+
+            if (a[k] === b[k]) return r;
+
+            if (k == "id" && b[k] == a[k]) {
+                debugger;
+                r.push([k, 'changed', a[k], b[k]]);
+            } else {
+                r.push([k, 'deleted', a[k]]);
+            }
+
+            return r;
+        }, []);
+    }
+
+
+    function findMissing(arr1, arr2) {
+        // let str = arr1.filter(i => !arr2.includes(x => i.id == x.id));
+
+        var list = [];
+        // var deleted = []
+        // var modified = [];
+        // var added = []
+        for (let index = 0; index < arr1.length; index++) {
+
+            const org = arr1[index];
+
+            const isfound = arr2.find(x => x.id === org.id);
+            if (isfound) {
+                if (isfound.item === org.item) {
+                    // not modified
+                } else {
+                    // text modifed
+                    // modified.push(org.item + "from " + isfound.item);
+                    list.push({
+                        status: "modified",
+                        value: org,
+                        to: isfound
+                    })
+                }
+            } else {
+                // deleted.push("deleted " + org.item)
+                list.push({
+                    status: "deleted",
+                    value: org,
+                })
+            }
+        }
+
+        for (let x = 0; x < arr2.length; x++) {
+            const org = arr2[x];
+
+            const isfound = arr1.find(x => x.id === org.id);
+            if (isfound) {
+
+            } else {
+                // added.push("Added" + org.item)
+                list.push({
+                    status: "Added",
+                    value: org,
+                })
+            }
+
+        }
+
+        return list;
+    }
+
+
+    // var diff = getDifference(
+    //     { a: { b: 1, c: 2 }, d: false, e: 15, f: "something important" },
+    //     { a: { b: 1, c: 22 }, d: false, e: "fifteen", g: "something new" }
+    // );
+
+    var a = [{ id: 0, item: "riyas==1.0" }, { id: 1, item: "Ashitha==1.0" }, { id: 2, item: "test==1.0" }, { id: 3, item: "test1==5.0" }]
+
+    var b = [{ id: 0, item: "riyass==1.0" }, { id: 1, item: "Ashitha==1.0" }, { id: 4, item: "new==1.0" }, { id: 7, item: "nexsdfdgw==1.0" }]
+
+
+    // var a = ["riyas==1.0", "Ashitha==1.0", "test==1.0", "test1==1.0"]
+
+    // var b = ["riyas==1.0", "Ashitha==1.0", "test==1.0", "new==1.02"]
+
+    var missing = findMissing(a, b);
+    console.log("Missing: ", missing)
+
+
+    var missing = findMissing(b, a);
+    console.log("Missing2: ", missing)
+
+    // var diff = getDifference(
+    //     a,
+    //     b
+    // );
+
+
+    // var diff2 = getDifference(
+    //     b,
+    //     a
+    // );
+
+    // console.log(diff);
+
+    // console.log(diff2);
+
+    // var span = ``;
+
+    // for (let index = 0; index < diff.length; index++) {
+    //     const element = diff[index];
+    //     debugger;
+    //     span += `<span>${element.join("---")}<span/><br>`
+    // }
+    // document.getElementById("test").innerHTML = span
+</script>
+
+</html>
